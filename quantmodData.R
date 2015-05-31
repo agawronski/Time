@@ -19,7 +19,7 @@ head(AAPL.uA <- adjustOHLC(AAPL, use.Adjusted=TRUE))
 chartSeries(AAPL.uA)
 
 
-chartSeries(IBM)
+#chartSeries(IBM)
 getSymbols("IBM", src="yahoo")
 head(IBM)
 head(IBM.a <- adjustOHLC(IBM))
@@ -47,14 +47,24 @@ summary(reg)
 chartSeries(log(AAPL))
 chartSeries(AAPL)
 
-library(vars)
+#Stabalize the variance with log
+AAPL$AAPL.Close <- log(AAPL$AAPL.Close)
+IBM$IBM.Close <- log(IBM$IBM.Close)
+
+
+library(vars) #why did I load this package?
 
 ####Augmented Dickey-Fuller (ADF) 
 #testing if the data is stationary ... the null is non-stationary
 #small p-values we reject the null
 #large p-values we fail to reject the null 
 #(and should transform the data if we require it to be stationary)
+
+#adf.test requires tseries package
+library(tseries)
 adf.test(AAPL$AAPL.Close, alternative="stationary")
+adf.test(IBM$IBM.Close, alternative="stationary")
+#both appear to require differencing
 
 
 # https://www.otexts.org/fpp/8/1
@@ -75,19 +85,28 @@ adf.test(AAPL$AAPL.Close, alternative="stationary")
 # ***nsdiffs & ndiffs require the forcast package
 library(forecast)
 
+# Trying nsdiffs on both AAPL and IBM implies that they are non seasonal
+
 ndiffs(AAPL$AAPL.Close)
 AAPL$AAPL.Close <- diff(AAPL$AAPL.Close, differences=1)
+AAPL <- AAPL[-1,] # remove first row because NA introduced from differencing
+adf.test(AAPL$AAPL.Close, alternative="stationary") # stationary yahoo!
+plot(AAPL$AAPL.Close) # variance doesn't appear perfectly constant 
+acf(AAPL$AAPL.Close)
 
 
-adf.test(IBM$IBM.Close, alternative="stationary")
 ndiffs(IBM$IBM.Close)
 IBM$IBM.Close <- diff(IBM$IBM.Close, differences=1)
+IBM <- IBM[-1,]
+adf.test(IBM$IBM.Close, alternative="stationary")
+plot(IBM$IBM.Close)
+acf(IBM$IBM.Close)
+
 
 #To preserve interpretability use the same differencing for all var
-#according to https://www.otexts.org/fpp/9/1
+#according to https://www.otexts.org/fpp/9/1 
+#I have not done this here, just taking note
 
-plot(AAPL$AAPL.Close)
-plot(IBM$IBM.Close) # they both appear stationary
 
 fit <- Arima(IBM$IBM.Close, xreg=AAPL$AAPL.Close, order=c(2,0,0))
 tsdisplay(arima.errors(fit), main="ARIMA errors")
