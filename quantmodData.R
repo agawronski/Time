@@ -83,7 +83,23 @@ adf.test(IBM$IBM.Close, alternative="stationary")
 ndiffs(IBM$IBM.Close)
 IBM$IBM.Close <- diff(IBM$IBM.Close, differences=1)
 
+#To preserve interpretability use the same differencing for all var
+#according to https://www.otexts.org/fpp/9/1
 
+plot(AAPL$AAPL.Close)
+plot(IBM$IBM.Close) # they both appear stationary
+
+fit <- Arima(IBM$IBM.Close, xreg=AAPL$AAPL.Close, order=c(2,0,0))
+tsdisplay(arima.errors(fit), main="ARIMA errors")
+
+#At this point we look at the plot (? I think?) to determine possible candidates for 
+#the ARIMA model. After testing various options we choose the one with the lowest AIC
+#then the model is refit with those specifications and the errors are obtained
+
+fit2 <- Arima(IBM$IBM.Close, xreg=AAPL$AAPL.Close, order=c(1,0,2))
+fit2
+
+Box.test(residuals(fit2), fitdf=5, lag=10, type="Ljung")
 
 
 
