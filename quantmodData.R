@@ -44,6 +44,8 @@ summary(reg)
 # tail(AAPL$AAPL.Interest)
 # AAPL <- AAPL[-nrow(AAPL),]
 
+#note, the above pushes the data the wrong way, k should be positive for lagged values
+
 chartSeries(log(AAPL))
 chartSeries(AAPL)
 
