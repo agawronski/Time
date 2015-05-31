@@ -135,19 +135,9 @@ plot(resid(fit2))
 plot(fit2)
 
 
-####Trying pure prediction for the heck of it
-
+####Prediction?
 library(caret)
 library(ggplot2)
-
-
-
-
-
-
-
-
-
 
 
 myTimeControl <- trainControl(method = "timeslice",
