@@ -97,22 +97,56 @@ collect3 <- IBM[,c("IBM.Interest1", "IBM.Interest2", "IBM.Interest3", "IBM.Inter
 
 collect4 <- IBM[,c("feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")]
 
-data <- cbind(collect1, collect2, collect3, collect4)
+data <- cbind(IBM$IBM.Close, collect1, collect2, collect3, collect4)
+data <- data[5:nrow(data),]
 
-fit <- lm(IBM$IBM.Close ~ data)
+fit <- lm(IBM.Close ~ ., data=data)
 summary(fit)
 
-data2 <- cbind(collect1, collect2, collect4)
+data2 <- cbind(IBM$IBM.Close, collect1, collect2, collect4)
+data2 <- data2[5:nrow(data2),]
 
-fit2 <- lm(IBM$IBM.Close ~ data2)
+fit2 <- lm(IBM.Close ~ ., data=data2)
 summary(fit2)
 
+library(car)
+outlierTest(fit)
+outlierTest(fit2)
+qqPlot(fit)
+qqPlot(fit2)
+
+# Evaluate homoscedasticity
+# non-constant error variance test
+ncvTest(fit) # the null hypothesis is constant error variance
+ncvTest(fit2)
+
+# 2 indicates no autocorrelation
+# O indicates positive
+# 4 indicates negative
+durbinWatsonTest(fit)
+durbinWatsonTest(fit2)
+
+plot(resid(fit))
+plot(fit)
+# plot 1, red line should be flat if linearity assumption is met
+# plot 1, look for constant variation of the residuals (homoskedasticity)
+# plot 2, are the errors normally distributed
+plot(resid(fit2))
+plot(fit2)
 
 
 ####Trying pure prediction for the heck of it
 
 library(caret)
 library(ggplot2)
+
+
+
+
+
+
+
+
 
 
 
