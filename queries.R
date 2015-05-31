@@ -9,3 +9,4 @@ ordersDetail$ORDERNUMBER <- sample(300, 300, replace=FALSE)
 
 ordersDetail <- ordersDetail[order(ordersDetail[,"ORDERNUMBER"]),]
 ordersDetail$ORDERDATE <- seq(as.Date("2011/1/5"), as.Date("2016/9/28"), by = "week")
+
